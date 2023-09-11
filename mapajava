@@ -1,0 +1,93 @@
+import java.util.NoSuchElementException;
+
+class Map<K, V> {
+    private static class Node<K, V> {
+        K key;
+        V value;
+        Node<K, V> next;
+        Node<K, V> prev;
+
+        Node(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    private Node<K, V> head;
+    private Node<K, V> tail;
+
+    // Adicionar um par chave-valor ao mapa
+    public void put(K key, V value) {
+        Node<K, V> newNode = new Node<>(key, value);
+        if (head == null) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+        }
+    }
+
+    // Obter o valor associado a uma chave
+    public V get(K key) {
+        Node<K, V> current = head;
+        while (current != null) {
+            if (current.key.equals(key)) {
+                return current.value;
+            }
+            current = current.next;
+        }
+        throw new NoSuchElementException("Chave não encontrada");
+    }
+
+    // Verificar se o mapa contém uma chave
+    public boolean containsKey(K key) {
+        Node<K, V> current = head;
+        while (current != null) {
+            if (current.key.equals(key)) {
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
+    }
+
+    // Remover um par chave-valor do mapa
+    public void remove(K key) {
+        Node<K, V> current = head;
+        while (current != null) {
+            if (current.key.equals(key)) {
+                if (current.prev != null) {
+                    current.prev.next = current.next;
+                } else {
+                    head = current.next;
+                }
+                if (current.next != null) {
+                    current.next.prev = current.prev;
+                } else {
+                    tail = current.prev;
+                }
+                return;
+            }
+            current = current.next;
+        }
+    }
+}
+
+public class MapTest {
+    public static void main(String[] args) {
+        Map<String, Integer> map = new Map<>();
+
+        map.put("chave1", 10);
+        map.put("chave2", 20);
+        map.put("chave3", 30);
+
+        System.out.println(map.get("chave1")); // Deve imprimir 10
+        System.out.println(map.get("chave2")); // Deve imprimir 20
+        System.out.println(map.containsKey("chave3")); // Deve imprimir true
+
+        map.remove("chave2");
+        System.out.println(map.containsKey("chave2")); // Deve imprimir false
+    }
+}
